@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"
+    />
+
+    <title>赛博木鱼</title>
+    <link rel="stylesheet" href="./asset/css/default.css" />
+    <link rel="shortcut icon" href="./asset/img/icon_new.ico" />
+    <!-- 引入样式 -->
+    <link rel="stylesheet" href="./asset/css/index.css" />
+    <style>
+      .minimization {
+        width: 20px;
+        height: 20px;
+        background-color: #fff;
+        background-image: url("asset/img/最小化.png");
+        background-size: 70% 70%;
+        background-repeat: no-repeat;
+        background-position: center;
+      }
+      .top {
+        width: 20px;
+        height: 20px;
+        background-color: #fff; 
+         background-size: 80% 80%;
+        background-repeat: no-repeat;
+        background-position: center;
+      }
+      .defTop {
+        background-image: url("asset/img/图钉.png");
+    
+      }
+      .actTop {
+        background-image: url("asset/img/图钉 (1).png");
+      }
+      .move {
+        width: 50px;
+        height: 20px;
+        background-color: #fff;
+        color: #000;
+        -webkit-app-region: drag;
+      }
+      .quit {
+        width: 20px;
+        height: 20px;
+        background-color: #fff;
+        background-image: url("asset/img/关闭.png");
+        background-repeat: no-repeat;
+        background-position: center;
+        background-size: 50% 50%;
+      }
+      .minimization:hover {
+        cursor: pointer;
+      }
+      .top:hover {
+        cursor: pointer;
+      }
+      .quit:hover {
+        cursor: pointer;
+      }
+      .actionField {
+        display: flex;
+        justify-content: space-between;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="app" v-cloak>
+      <div class="actionField">
+        <!-- 左 -->
+        <div class="move"></div>
+        <!-- 右 -->
+        <div style="display: flex">
+          <div class="minimization" @click="mization" title="最小化"></div>
+          <div class="top" :class="{defTop:istop,actTop:!istop}" @click="top" title="置顶"></div>
+          <div class="quit" @click="quit" title="关闭"></div>
+        </div>
+      </div>
+      <!-- 功德 -->
+      <div class="gongde" :class="{gongdejiayi}">{{gongde}}</div>
+      <!-- 木鱼 -->
+      <div class="muyu" :class="{sf}" @click="chuang" v-show="main">
+        <img src="./asset/img/muyu.jpg" draggable="false" />
+      </div>
+      <audio ref="ding" src="./asset/audio/muyu.mp3"></audio>
+    </div>
+    <!-- 导入 Vue -->
+    <script src="./asset/js/Vue.js"></script>
+    <script>
+      const { ipcRenderer } = require("electron");
+      let isclick = true;
+      let d = new Date().getDay();
+      const App = {
+        data() {
+          return {
+            main: true,
+            count: 0,
+            sf: false,
+            gongdejiayi: false,
+            gongde: "",
+            istop: true,
+          };
+        },
+        methods: {
+          chuang() {
+            if (isclick) {
+              this.gongdejiayi = true;
+              isclick = false;
+              let ding = this.$refs.ding;
+              ding.play();
+              // 疯狂星期寺
+              if (d == 4) {
+                this.gongde = "功德+2";
+              } else {
+                this.gongde = "功德+1";
+              }
+
+              ding.addEventListener("ended", () => {
+                isclick = true;
+                this.sf = false;
+                this.gongde = "";
+                this.gongdejiayi = false;
+              });
+              this.sf = true;
+              // 疯狂星期寺
+              if (d == 4) {
+                this.count += 2;
+              } else {
+                this.count += 1;
+              }
+              let str = this.count.toString();
+            }
+          },
+          quit() {
+            ipcRenderer.send("quit-app");
+          },
+          top(){
+            this.istop = !this.istop;
+            ipcRenderer.send("top-app");
+          },
+          mization() {
+            ipcRenderer.send("minimize-to-tray");
+          },
+        },
+      };
+      const app = Vue.createApp(App);
+      app.mount("#app");
+    </script>
+  </body>
+</html>

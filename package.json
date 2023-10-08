@@ -1,0 +1,56 @@
+{
+  "name": "electron_muyu",
+  "productName": "赛博木鱼",
+  "version": "1.0.0",
+  "description": "",
+  "main": "main.js",
+  "build": {
+    "appId": "com.yourcompany.your-app-id",
+    "mac": {
+      "category": "your.app.category.type"
+    },
+    "linux": {
+      "target": [
+        "AppImage",
+        "deb"
+      ]
+    },
+    "win": {
+      "icon": "asset/img/icon_new.ico",
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        }
+      ]
+    },
+    "extraResources": [
+      {
+        "from": "./asset",
+        "to": "./asset",
+        "filter": [
+          "**/*"
+        ]
+      }
+    ],
+    "nsis": {
+      "createStartMenuShortcut": true,
+      "installerIcon": "./asset/img/icon_new.ico",
+      "installerHeaderIcon": "./asset/img/icon_new.ico"
+    }
+  },
+  "scripts": {
+    "start": "electron .",
+    "pack": "electron-builder --dir",
+    "dist": "electron-builder"
+  },
+  "devDependencies": {
+    "electron": "^26.2.3",
+    "electron-builder": "^24.6.4"
+  },
+  "dependencies": {
+    "electron-reload": "^2.0.0-alpha.1"
+  }
+}
